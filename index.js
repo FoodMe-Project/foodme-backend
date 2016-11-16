@@ -33,8 +33,8 @@ app.get('/newuser', (req, res) => {
 	.then(user => {
 		res.send(user[0]);
 	})
-	.catch(error => {
-		res.status(500).send(error.stack);
+	.catch(err => {
+		res.status(500).send(err.stack);
 	})
 });
 
@@ -44,8 +44,8 @@ app.get('/newingredient', (req, res) => {
 	.then(ingredient => {
 		res.send(ingredient[0]);
 	})
-	.catch(error => {
-		res.status(500).send(error.stack)
+	.catch(err => {
+		res.status(500).send(err.stack);
 	})
 });
 
@@ -55,8 +55,8 @@ app.get('/newrecipe', (req, res) => {
 	.then(recipe => {
 		res.send(recipe[0]);
 	})
-	.catch(error => {
-		res.status(500).send(error.stack)
+	.catch(err => {
+		res.status(500).send(err.stack);
 	})
 });
 
@@ -66,10 +66,32 @@ app.get('/newfridge', (req, res) => {
 	.then(fridge => {
 		res.send(fridge[0]);
 	})
-	.catch(error => {
-		res.status(500).send(error.stack)
+	.catch(err => {
+		res.status(500).send(err.stack);
 	})
 });
+
+// User save recipe
+app.get('/saverecipe', (req, res) => {
+	sqlAPI.saveUserRecipe(req.query)
+	.then(savedRecipe => {
+		res.send(savedRecipe[0]);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+})
+
+// Get user saved recipes
+app.get('/userrecipe', (req, res) => {
+	sqlAPI.getUserSavedRecipes(req.query)
+	.then(recipes => {
+		res.send(recipes);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+})	
 
 ///////////////////////////////////////////////////////////////////////////////
 const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), () => {

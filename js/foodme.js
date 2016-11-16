@@ -48,7 +48,7 @@ const insertRecipe = `
 `;
 
 const selectRecipe = `
-	SLECT * FROM recipes
+	SELECT * FROM recipes
 	WHERE id = ?
 `;
 
@@ -63,9 +63,20 @@ const selectFridge = `
 	WHERE id = ?
 `;
 
+const saveRecipe = `
+	INSERT INTO userRecipes
+	(userId, recipeId)
+	VALUES (?, ?)
+`;
+
+const userRecipes = `
+	SELECT * FROM userRecipes
+	WHERE userId = ?
+`;
+
 ///////////////////////////////////////////////////////////////////////////////
-module.exports = function sqlAPI(conn) {
-	const sqlQuery = makeConnQuery(conn);
+module.exports = function sqlAPI(connection) {
+	const sqlQuery = makeConnQuery(connection);
 
 	return {
 
@@ -78,11 +89,11 @@ module.exports = function sqlAPI(conn) {
 				return userCreated
 			})
 			.catch(error => {
-				if (error.code === 'ER_DUP_ENTRY') {
+				if (err.code === 'ER_DUP_ENTRY') {
 					throw new Error('A user with this authId already exists');
 				}
 				else {
-					throw new Error(error);
+					throw new Error(err);
 				}
 			})
 		},
@@ -96,11 +107,11 @@ module.exports = function sqlAPI(conn) {
 				return ingredientCreated
 			})
 			.catch(error => {
-				if (error.code === 'ER_DUP_ENTRY') {
+				if (err.code === 'ER_DUP_ENTRY') {
 					throw new Error('An ingredient with this apiId or name already exists');
 				}
 				else {
-					throw new Error(error);
+					throw new Error(err);
 				}
 			})
 		},
@@ -113,12 +124,12 @@ module.exports = function sqlAPI(conn) {
 			.then(recipeCreated => {
 				return recipeCreated
 			})
-			.catch(error => {
-				if (error.code === 'ER_DUP_ENTRY') {
+			.catch(err => {
+				if (err.code === 'ER_DUP_ENTRY') {
 					throw new Error('An recipe with this apiId or name already exists');
 				}
 				else {
-					throw new Error(error);
+					throw new Error(err);
 				}				
 			})
 		},
@@ -131,20 +142,50 @@ module.exports = function sqlAPI(conn) {
 			.then(fridgeCreated => {
 				return fridgeCreated
 			})
-			.catch(error => {
-				if (error.code === 'ER_DUP_ENTRY') {
+			.catch(err => {
+				if (err.code === 'ER_DUP_ENTRY') {
 					throw new Error('An recipe with this apiId or name already exists');
 				}
 				else {
-					throw new Error(error);
+					throw new Error(err);
 				}				
 			})
 		},
 
-		///////////////////////////////////////////////////////////////////////
-		// Get user's saved recipes
+		saveUserRecipe: (recipe) => {
+			let recipeId = recipe.recipeId;
+			return sqlQuery(saveRecipe, [recipe.userId, recipe.recipeId])
+			.then(result => {
+				return sqlQuery(selectRecipe, [recipeId])
+			})
+			.then(savedRecipe => {
+				return savedRecipe
+			})
+			.catch(err => {
+				if (err.code === 'ER_DUP_ENTRY') {
+					throw new Error('This recipe is already saved');
+				}
+				else {
+					throw new Error(err);
+				}
+			})
+		},
 
+		getUserSavedRecipes: (user) => {
+			return sqlQuery(userRecipes, [user.id])
+			.then(recipes => {
+				return recipes
+			})
+			.catch(err => {
+				throw new Error(err);
+			})
+		},
 
+		saveUserIngredient: (ingredient) => {
+			
+		}
+
+		// save ingredient for user
 		///////////////////////////////////////////////////////////////////////
 		// Get user's saved ingredients
 
@@ -162,6 +203,6 @@ module.exports = function sqlAPI(conn) {
 
 
 		///////////////////////////////////////////////////////////////////////
-		// Delete recipe from database
+		// Delete recipe from database 
 	}
 }
