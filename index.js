@@ -30,17 +30,35 @@ app.get('/', function(request, response) {
 })
 
 // Create user
-app.get('/user', function(request, response) {
-	let testUser = {
-		authId: 'xoxoxoxoxoxo',
-		username: 'omg',
-	}
-	foodmeAPI.createUser(testUser)
+app.get('/newuser', (request, response) => {
+	foodmeAPI.createUser(request.body)
 	.then(result => {
-		console.log(result);
+		response.send(`${result}`);
 	})
 	.catch(error => {
 		response.status(500).send(`${error.stack}`);
+	})
+});
+
+// Create ingredient
+app.get('/newingredient', (request, response) => {
+	foodmeAPI.createIngredient(request.body)
+	.then(result => {
+		response.send(`${result}`);
+	})
+	.catch(error => {
+		response.status(500).send(`${error}`)
+	})
+});
+
+// Create recipe
+app.get('/newrecipe', (request, response) => {
+	foodmeAPI.createRecipe(request.body)
+	.then(result => {
+		response.send(`${result}`);
+	})
+	.catch(error => {
+		response.status(500).send(`${error}`)
 	})
 });
 

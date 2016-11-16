@@ -1,3 +1,7 @@
+// What to do when authId expires??
+// Test server request??
+// Passing object in server request??
+
 ///////////////////////////////////////////////////////////////////////////////
 // Query to the database
 function makeConnQuery(connection) {
@@ -27,16 +31,22 @@ function stringifyQuery(query) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // SQL queries
-const selectUser = `
-	SELECT id, authId, username, createAt, updatedAt
-	FROM users
-	WHERE id = ?
-`;
-
 const insertUser = `
 	INSERT INTO users
 	(authId, username, createdAt, updatedAt)
 	VALUES (?, ?, ?, ?)
+`;
+
+const insertIngredient = `
+	INSERT INTO ingredients
+	(apiId, name, createdAt, updatedAt)
+	VALUES (?, ?, ?, ?)
+`;
+
+const insertRecipe = `
+	INSERT INTO recipes
+	(apiId, name, url, createdAt, updatedAt)
+	VALUES (?, ?, ?, ?, ?)
 `;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,16 +56,14 @@ module.exports = function FoodMeAPI(conn) {
 
 	return {
 
-		///////////////////////////////////////////////////////////////////////
-		// Insert user in database (only if doesn't exist)
-		createUser: function createUser(user) {
+		createUser: (user) => {
 			return connQuery(insertUser, [user.authId, user.username, new Date(), new Date()])
 			.then(result => {
 				return result
 			})
 			.catch(error => {
 				if (error.code === 'ER_DUP_ENTRY') {
-					throw new Error('A user with this authId already exist');
+					throw new Error('A user with this authId already exists');
 				}
 				else {
 					throw new Error(error);
@@ -63,13 +71,35 @@ module.exports = function FoodMeAPI(conn) {
 			})
 		},
 
-		///////////////////////////////////////////////////////////////////////
-		// Insert ingredient into database (only if doesn't exist)
+		createIngredient: (ingredient) => {
+			return connQuery(insertIngredient, [ingredient.apiId, ingredient.name, new Date(), new Date()])
+			.then(result => {
+				return result
+			})
+			.catch(error => {
+				if (error.code === 'ER_DUP_ENTRY') {
+					throw new Error('An ingredient with this apiId or name already exists');
+				}
+				else {
+					throw new Error(error);
+				}
+			})
+		},
 
-
-		///////////////////////////////////////////////////////////////////////
-		// Insert recipe into database (only if doesn't exist)
-
+		createRecipe: (recipe) => {
+			return connQuery(insertRecipe, [recipe.apiId, recipe.name, recipe.url, new Date(), new Date()])
+			.then(result => {
+				return result
+			})
+			.catch(error => {
+				if (error.code === 'ER_DUP_ENTRY') {
+					throw new Error('An recipe with this apiId or name already exists');
+				}
+				else {
+					throw new Error(error);
+				}				
+			})
+		},
 
 		///////////////////////////////////////////////////////////////////////
 		// Create user's fridge
