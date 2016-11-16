@@ -1,13 +1,15 @@
 const express = require('express');
 const foodme = require('./js/foodme.js');
+const path = require('path');
 const morgan = require('morgan');
 const mysql = require('mysql');
 const favicon = require('serve-favicon');
 
 const app = express();
-app.use(favicon(__dirname + '/public/images/favicon.ico'));
+app.set('view engine', 'pug');
+app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
-// Console.log every request to the web server
+// Console.log every request to the web server, USEFULL??
 app.use(morgan('dev'));
 
 // Access to the database
@@ -17,56 +19,61 @@ const connection = mysql.createConnection({
 	password: 'sqltemppassword',
 	database: 'foodme'
 });
-
-const foodmeAPI = foodme(connection);
-
-app.locals.pretty = true;
-app.locals.title = "FoodMe";
+const sqlAPI = foodme(connection);
 
 ///////////////////////////////////////////////////////////////////////////////
-// Resources
-app.get('/', function(request, response) {
-	response.status(200).send('Server on');
-})
+// Documentation
+app.get('/', function(req, res) {
+	res.status(200).render('index');
+});
 
 // Create user
-app.get('/newuser', (request, response) => {
-	foodmeAPI.createUser(request.body)
-	.then(result => {
-		response.send(`${result}`);
+app.get('/newuser', (req, res) => {
+	sqlAPI.createUser(req.query)
+	.then(user => {
+		res.send(user[0]);
 	})
 	.catch(error => {
-		response.status(500).send(`${error.stack}`);
+		res.status(500).send(error.stack);
 	})
 });
 
 // Create ingredient
-app.get('/newingredient', (request, response) => {
-	foodmeAPI.createIngredient(request.body)
-	.then(result => {
-		response.send(`${result}`);
+app.get('/newingredient', (req, res) => {
+	sqlAPI.createIngredient(req.query)
+	.then(ingredient => {
+		res.send(ingredient[0]);
 	})
 	.catch(error => {
-		response.status(500).send(`${error}`)
+		res.status(500).send(error.stack)
 	})
 });
 
 // Create recipe
-app.get('/newrecipe', (request, response) => {
-	foodmeAPI.createRecipe(request.body)
-	.then(result => {
-		response.send(`${result}`);
+app.get('/newrecipe', (req, res) => {
+	sqlAPI.createRecipe(req.query)
+	.then(recipe => {
+		res.send(recipe[0]);
 	})
 	.catch(error => {
-		response.status(500).send(`${error}`)
+		res.status(500).send(error.stack)
+	})
+});
+
+// Create fridge
+app.get('/newfridge', (req, res) => {
+	sqlAPI.createFridge(req.query)
+	.then(fridge => {
+		res.send(fridge[0]);
+	})
+	.catch(error => {
+		res.status(500).send(error.stack)
 	})
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// Start web server
-const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), function() {
+const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), () => {
 	const host = server.address().address;
 	const port = server.address().port;
-
 	console.log('Web server listening at http://%s:%s', host, port);
-})
+});

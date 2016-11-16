@@ -1,13 +1,11 @@
 // What to do when authId expires??
-// Test server request??
-// Passing object in server request??
 
 ///////////////////////////////////////////////////////////////////////////////
-// Query to the database
+// Promise query to the database
 function makeConnQuery(connection) {
 	return function connQuery(thequery, params) {
-		return new Promise(function(resolve, reject) {
-			connection.query(thequery, params, function(err, result) {
+		return new Promise((resolve, reject) => {
+			connection.query(thequery, params, (err, result) => {
 				if (err) {
 					reject(err);
 				}
@@ -19,16 +17,6 @@ function makeConnQuery(connection) {
 	}	
 }
 
-function stringifyQuery(query) {
-	return (
-		connectionQuery(query)
-		.then(function(result) {
-			var actualQuery = JSON.stringify(result, null, 4);
-			return actualQuery;
-		})
-	);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // SQL queries
 const insertUser = `
@@ -37,10 +25,20 @@ const insertUser = `
 	VALUES (?, ?, ?, ?)
 `;
 
+const selectUser = `
+	SELECT * FROM users
+	WHERE id = ?
+`;
+
 const insertIngredient = `
 	INSERT INTO ingredients
 	(apiId, name, createdAt, updatedAt)
 	VALUES (?, ?, ?, ?)
+`;
+
+const selectIngredient = `
+	SELECT * FROM ingredients
+	WHERE id = ?
 `;
 
 const insertRecipe = `
@@ -49,17 +47,35 @@ const insertRecipe = `
 	VALUES (?, ?, ?, ?, ?)
 `;
 
+const selectRecipe = `
+	SLECT * FROM recipes
+	WHERE id = ?
+`;
+
+const insertFridge = `
+	INSERT INTO fridges
+	(userId, createdAt, updatedAt)
+	VALUES (?, ?, ?)
+`;
+
+const selectFridge = `
+	SELECT * FROM fridges
+	WHERE id = ?
+`;
+
 ///////////////////////////////////////////////////////////////////////////////
-// API functions
-module.exports = function FoodMeAPI(conn) {
-	const connQuery = makeConnQuery(conn);
+module.exports = function sqlAPI(conn) {
+	const sqlQuery = makeConnQuery(conn);
 
 	return {
 
 		createUser: (user) => {
-			return connQuery(insertUser, [user.authId, user.username, new Date(), new Date()])
+			return sqlQuery(insertUser, [user.authId, user.username, new Date(), new Date()])
 			.then(result => {
-				return result
+				return sqlQuery(selectUser, [result.insertId])
+			})
+			.then(userCreated => {
+				return userCreated
 			})
 			.catch(error => {
 				if (error.code === 'ER_DUP_ENTRY') {
@@ -72,9 +88,12 @@ module.exports = function FoodMeAPI(conn) {
 		},
 
 		createIngredient: (ingredient) => {
-			return connQuery(insertIngredient, [ingredient.apiId, ingredient.name, new Date(), new Date()])
+			return sqlQuery(insertIngredient, [ingredient.apiId, ingredient.name, new Date(), new Date()])
 			.then(result => {
-				return result
+				return sqlQuery(selectIngredient, [result.insertId])
+			})
+			.then(ingredientCreated => {
+				return ingredientCreated
 			})
 			.catch(error => {
 				if (error.code === 'ER_DUP_ENTRY') {
@@ -87,9 +106,12 @@ module.exports = function FoodMeAPI(conn) {
 		},
 
 		createRecipe: (recipe) => {
-			return connQuery(insertRecipe, [recipe.apiId, recipe.name, recipe.url, new Date(), new Date()])
+			return sqlQuery(insertRecipe, [recipe.apiId, recipe.name, recipe.url, new Date(), new Date()])
 			.then(result => {
-				return result
+				return sqlQuery(selectRecipe, [result.insertId])
+			})
+			.then(recipeCreated => {
+				return recipeCreated
 			})
 			.catch(error => {
 				if (error.code === 'ER_DUP_ENTRY') {
@@ -101,9 +123,23 @@ module.exports = function FoodMeAPI(conn) {
 			})
 		},
 
-		///////////////////////////////////////////////////////////////////////
-		// Create user's fridge
-
+		createFridge: (user) => {
+			return sqlQuery(insertFridge, [user.id, new Date(), new Date()])
+			.then (result => {
+				return sqlQuery(selectFridge, [result.insertId])
+			})
+			.then(fridgeCreated => {
+				return fridgeCreated
+			})
+			.catch(error => {
+				if (error.code === 'ER_DUP_ENTRY') {
+					throw new Error('An recipe with this apiId or name already exists');
+				}
+				else {
+					throw new Error(error);
+				}				
+			})
+		},
 
 		///////////////////////////////////////////////////////////////////////
 		// Get user's saved recipes
