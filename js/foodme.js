@@ -27,7 +27,17 @@ function stringifyQuery(query) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // SQL queries
+const selectUser = `
+	SELECT id, authId, username, createAt, updatedAt
+	FROM users
+	WHERE id = ?
+`;
 
+const insertUser = `
+	INSERT INTO users
+	(authId, username, createdAt, updatedAt)
+	VALUES (?, ?, ?, ?)
+`;
 
 ///////////////////////////////////////////////////////////////////////////////
 // API functions
@@ -38,7 +48,20 @@ module.exports = function FoodMeAPI(conn) {
 
 		///////////////////////////////////////////////////////////////////////
 		// Insert user in database (only if doesn't exist)
-
+		createUser: function createUser(user) {
+			return connQuery(insertUser, [user.authId, user.username, new Date(), new Date()])
+			.then(result => {
+				return result
+			})
+			.catch(error => {
+				if (error.code === 'ER_DUP_ENTRY') {
+					throw new Error('A user with this authId already exist');
+				}
+				else {
+					throw new Error(error);
+				}
+			})
+		},
 
 		///////////////////////////////////////////////////////////////////////
 		// Insert ingredient into database (only if doesn't exist)

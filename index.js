@@ -29,6 +29,21 @@ app.get('/', function(request, response) {
 	response.status(200).send('Server on');
 })
 
+// Create user
+app.get('/user', function(request, response) {
+	let testUser = {
+		authId: 'xoxoxoxoxoxo',
+		username: 'omg',
+	}
+	foodmeAPI.createUser(testUser)
+	.then(result => {
+		console.log(result);
+	})
+	.catch(error => {
+		response.status(500).send(`${error.stack}`);
+	})
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 // Start web server
 const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), function() {
