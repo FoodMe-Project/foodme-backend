@@ -1,5 +1,23 @@
 module.exports = {
 
+	// Query to mysql database as promise
+	makeConnQuery: (connection) => {
+		return function connQuery(thequery, params) {
+			return new Promise((resolve, reject) => {
+				connection.query(thequery, params, (err, result) => {
+					if (err) {
+						reject(err);
+					}
+					else {
+						resolve(result);
+					}
+				})
+			});
+		}	
+	},
+
+	///////////////////////////////////////////////////////////////////////////
+	// Mysql queries
 	"insertUser": `
 		INSERT INTO users 
 		(authId, username, createdAt, updatedAt) 
@@ -67,8 +85,11 @@ module.exports = {
 	`,
 
 	"fridgeIng": `
-		SELECT * FROM fridgeIngredients
-		WHERE fridgeId = ?
+		SELECT ingredients.id, ingredients.name  
+		FROM ingredients 
+		JOIN fridgeIngredients 
+			ON fridgeIngredients.ingredientId = ingredients.id 
+		WHERE fridgeIngredients.fridgeId = ?
 	`,
 
 };

@@ -1,30 +1,12 @@
 const q = require('./queries');
 
-///////////////////////////////////////////////////////////////////////////////
-// Promise query to the database
-function makeConnQuery(connection) {
-	return function connQuery(thequery, params) {
-		return new Promise((resolve, reject) => {
-			connection.query(thequery, params, (err, result) => {
-				if (err) {
-					reject(err);
-				}
-				else {
-					resolve(result);
-				}
-			})
-		});
-	}	
-}
-
-///////////////////////////////////////////////////////////////////////////////
 module.exports = function sqlAPI(connection) {
-	const sqlQuery = makeConnQuery(connection);
+	const sqlQuery = q.makeConnQuery(connection);
 
 	return {
 
 		createUser: (user) => {
-			return sqlQuery(q.insertUser, [user.authId, user.username, new Date(), new Date()])
+			return sqlQuery(q.insertUser, [user.clientId, user.nickname, new Date(), new Date()])
 			.then(result => {
 				return sqlQuery(q.selectUser, [result.insertId])
 			})
@@ -149,7 +131,7 @@ module.exports = function sqlAPI(connection) {
 		getUserFridge: (user) => {
 			return sqlQuery(q.userFridge, [user.userId])
 			.then(fridge => {
-				return sqlQuery(q.fridgeIng, [fridge.id])
+				return sqlQuery(q.fridgeIng, [fridge[0].id])
 			})
 			.then(ingredients => {
 				return ingredients
@@ -159,17 +141,26 @@ module.exports = function sqlAPI(connection) {
 			})
 		},
 
+		deleteUser: (user) => {
+			return sqlQuery(q.deleteUser, [user.id])
+			.then(result => {
+				return result
+			})
+			.catch(err => {
+				throw new Error(err);
+			})
+		},
 
-		///////////////////////////////////////////////////////////////////////
-		// Add ingredient to user's fridge
+		// deleteIngredientFridge: (ingredient) => {
+		// 	let ingredientId = ingredient.ingredientId
+		// 	return sqlQuery(q.userFridge, [ingredient.userId])
+		// 	.then(fridge => {
 
-
-		///////////////////////////////////////////////////////////////////////
-		// Delete user from database
-
-
-		///////////////////////////////////////////////////////////////////////
-		// Delete ingredient from database
+		// 	})
+		// 	.catch(err => {
+		// 		throw new Error(err);
+		// 	})
+		// }
 
 
 		///////////////////////////////////////////////////////////////////////

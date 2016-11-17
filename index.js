@@ -30,8 +30,8 @@ app.get('/', function(req, res) {
 });
 
 // Create user
-app.get('/newuser', (req, res) => {
-	sqlAPI.createUser(req.query)
+app.post('/newuser', (req, res) => {
+	sqlAPI.createUser(req.body)
 	.then(user => {
 		res.send(user[0]);
 	})
@@ -41,8 +41,8 @@ app.get('/newuser', (req, res) => {
 });
 
 // Create ingredient
-app.get('/newingredient', (req, res) => {
-	sqlAPI.createIngredient(req.query)
+app.post('/newingredient', (req, res) => {
+	sqlAPI.createIngredient(req.body)
 	.then(ingredient => {
 		res.send(ingredient[0]);
 	})
@@ -52,8 +52,8 @@ app.get('/newingredient', (req, res) => {
 });
 
 // Create recipe
-app.get('/newrecipe', (req, res) => {
-	sqlAPI.createRecipe(req.query)
+app.post('/newrecipe', (req, res) => {
+	sqlAPI.createRecipe(req.body)
 	.then(recipe => {
 		res.send(recipe[0]);
 	})
@@ -63,8 +63,8 @@ app.get('/newrecipe', (req, res) => {
 });
 
 // Create fridge
-app.get('/newfridge', (req, res) => {
-	sqlAPI.createFridge(req.query)
+app.post('/newfridge', (req, res) => {
+	sqlAPI.createFridge(req.body)
 	.then(fridge => {
 		res.send(fridge[0]);
 	})
@@ -74,8 +74,8 @@ app.get('/newfridge', (req, res) => {
 });
 
 // User save recipe
-app.get('/saverecipe', (req, res) => {
-	sqlAPI.saveUserRecipe(req.query)
+app.post('/saverecipe', (req, res) => {
+	sqlAPI.saveUserRecipe(req.body)
 	.then(savedRecipe => {
 		res.send(savedRecipe[0]);
 	})
@@ -85,8 +85,8 @@ app.get('/saverecipe', (req, res) => {
 });
 
 // Get user saved recipes
-app.get('/userrecipe', (req, res) => {
-	sqlAPI.getUserSavedRecipes(req.query)
+app.post('/userrecipe', (req, res) => {
+	sqlAPI.getUserSavedRecipes(req.body)
 	.then(recipes => {
 		res.send(recipes);
 	})
@@ -96,8 +96,8 @@ app.get('/userrecipe', (req, res) => {
 });
 
 // Save ingredient to fridge
-app.get('/saveingredient', (req, res) => {
-	sqlAPI.saveUserIngredient(req.query)
+app.post('/saveingredient', (req, res) => {
+	sqlAPI.saveUserIngredient(req.body)
 	.then(savedIngredient => {
 		res.send(savedIngredient[0]);
 	})
@@ -106,8 +106,9 @@ app.get('/saveingredient', (req, res) => {
 	})
 });
 
-app.get('/userfridge', (req, res) => {
-	sqlAPI.getUserFridge(req.query)
+// Get user saved ingredients
+app.post('/userfridge', (req, res) => {
+	sqlAPI.getUserFridge(req.body)
 	.then(fridge => {
 		res.send(fridge);
 	})
