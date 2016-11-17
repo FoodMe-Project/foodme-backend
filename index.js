@@ -4,13 +4,15 @@ const path = require('path');
 const morgan = require('morgan');
 const mysql = require('mysql');
 const favicon = require('serve-favicon');
+const bodyParser = require('body-parser');
 
 const app = express();
 app.set('view engine', 'pug');
-app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
-// Console.log every request to the web server, USEFULL??
 app.use(morgan('dev'));
+app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Access to the database
 const connection = mysql.createConnection({
@@ -80,7 +82,7 @@ app.get('/saverecipe', (req, res) => {
 	.catch(err => {
 		res.status(500).send(err.stack);
 	})
-})
+});
 
 // Get user saved recipes
 app.get('/userrecipe', (req, res) => {
@@ -91,7 +93,28 @@ app.get('/userrecipe', (req, res) => {
 	.catch(err => {
 		res.status(500).send(err.stack);
 	})
-})	
+});
+
+// Save ingredient to fridge
+app.get('/saveingredient', (req, res) => {
+	sqlAPI.saveUserIngredient(req.query)
+	.then(savedIngredient => {
+		res.send(savedIngredient[0]);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+});
+
+app.get('/userfridge', (req, res) => {
+	sqlAPI.getUserFridge(req.query)
+	.then(fridge => {
+		res.send(fridge);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), () => {

@@ -1,4 +1,4 @@
-// What to do when authId expires??
+const q = require('./queries');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Promise query to the database
@@ -18,77 +18,20 @@ function makeConnQuery(connection) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// SQL queries
-const insertUser = `
-	INSERT INTO users
-	(authId, username, createdAt, updatedAt)
-	VALUES (?, ?, ?, ?)
-`;
-
-const selectUser = `
-	SELECT * FROM users
-	WHERE id = ?
-`;
-
-const insertIngredient = `
-	INSERT INTO ingredients
-	(apiId, name, createdAt, updatedAt)
-	VALUES (?, ?, ?, ?)
-`;
-
-const selectIngredient = `
-	SELECT * FROM ingredients
-	WHERE id = ?
-`;
-
-const insertRecipe = `
-	INSERT INTO recipes
-	(apiId, name, url, createdAt, updatedAt)
-	VALUES (?, ?, ?, ?, ?)
-`;
-
-const selectRecipe = `
-	SELECT * FROM recipes
-	WHERE id = ?
-`;
-
-const insertFridge = `
-	INSERT INTO fridges
-	(userId, createdAt, updatedAt)
-	VALUES (?, ?, ?)
-`;
-
-const selectFridge = `
-	SELECT * FROM fridges
-	WHERE id = ?
-`;
-
-const saveRecipe = `
-	INSERT INTO userRecipes
-	(userId, recipeId)
-	VALUES (?, ?)
-`;
-
-const userRecipes = `
-	SELECT * FROM userRecipes
-	WHERE userId = ?
-`;
-
-///////////////////////////////////////////////////////////////////////////////
 module.exports = function sqlAPI(connection) {
 	const sqlQuery = makeConnQuery(connection);
 
 	return {
 
 		createUser: (user) => {
-			return sqlQuery(insertUser, [user.authId, user.username, new Date(), new Date()])
+			return sqlQuery(q.insertUser, [user.authId, user.username, new Date(), new Date()])
 			.then(result => {
-				return sqlQuery(selectUser, [result.insertId])
+				return sqlQuery(q.selectUser, [result.insertId])
 			})
 			.then(userCreated => {
 				return userCreated
 			})
-			.catch(error => {
+			.catch(err => {
 				if (err.code === 'ER_DUP_ENTRY') {
 					throw new Error('A user with this authId already exists');
 				}
@@ -99,9 +42,9 @@ module.exports = function sqlAPI(connection) {
 		},
 
 		createIngredient: (ingredient) => {
-			return sqlQuery(insertIngredient, [ingredient.apiId, ingredient.name, new Date(), new Date()])
+			return sqlQuery(q.insertIngredient, [ingredient.apiId, ingredient.name, new Date(), new Date()])
 			.then(result => {
-				return sqlQuery(selectIngredient, [result.insertId])
+				return sqlQuery(q.selectIngredient, [result.insertId])
 			})
 			.then(ingredientCreated => {
 				return ingredientCreated
@@ -117,9 +60,9 @@ module.exports = function sqlAPI(connection) {
 		},
 
 		createRecipe: (recipe) => {
-			return sqlQuery(insertRecipe, [recipe.apiId, recipe.name, recipe.url, new Date(), new Date()])
+			return sqlQuery(q.insertRecipe, [recipe.apiId, recipe.name, recipe.url, new Date(), new Date()])
 			.then(result => {
-				return sqlQuery(selectRecipe, [result.insertId])
+				return sqlQuery(q.selectRecipe, [result.insertId])
 			})
 			.then(recipeCreated => {
 				return recipeCreated
@@ -135,9 +78,9 @@ module.exports = function sqlAPI(connection) {
 		},
 
 		createFridge: (user) => {
-			return sqlQuery(insertFridge, [user.id, new Date(), new Date()])
+			return sqlQuery(q.insertFridge, [user.id, new Date(), new Date()])
 			.then (result => {
-				return sqlQuery(selectFridge, [result.insertId])
+				return sqlQuery(q.selectFridge, [result.insertId])
 			})
 			.then(fridgeCreated => {
 				return fridgeCreated
@@ -154,9 +97,9 @@ module.exports = function sqlAPI(connection) {
 
 		saveUserRecipe: (recipe) => {
 			let recipeId = recipe.recipeId;
-			return sqlQuery(saveRecipe, [recipe.userId, recipe.recipeId])
+			return sqlQuery(q.saveRecipe, [recipe.userId, recipe.recipeId])
 			.then(result => {
-				return sqlQuery(selectRecipe, [recipeId])
+				return sqlQuery(q.selectRecipe, [recipeId])
 			})
 			.then(savedRecipe => {
 				return savedRecipe
@@ -172,7 +115,7 @@ module.exports = function sqlAPI(connection) {
 		},
 
 		getUserSavedRecipes: (user) => {
-			return sqlQuery(userRecipes, [user.id])
+			return sqlQuery(q.userRecipes, [user.id])
 			.then(recipes => {
 				return recipes
 			})
@@ -182,12 +125,39 @@ module.exports = function sqlAPI(connection) {
 		},
 
 		saveUserIngredient: (ingredient) => {
-			
-		}
+			let ingredientId = ingredient.ingredientId
+			return sqlQuery(q.userFridge, [ingredient.userId]) 
+			.then(fridge => {
+				return sqlQuery(q.saveIngredient, [fridge.id, ingredientId])				
+			})
+			.then(result => {
+				return sqlQuery(q.selectIngredient, [ingredientId])
+			})
+			.then(savedIngredient => {
+				return savedIngredient
+			})
+			.catch(err => {
+				if (err.code === 'ER_DUP_ENTRY') {
+					throw new Error('This ingredient is already saved');
+				}
+				else {
+					throw new Error(err);
+				}
+			})
+		},
 
-		// save ingredient for user
-		///////////////////////////////////////////////////////////////////////
-		// Get user's saved ingredients
+		getUserFridge: (user) => {
+			return sqlQuery(q.userFridge, [user.userId])
+			.then(fridge => {
+				return sqlQuery(q.fridgeIng, [fridge.id])
+			})
+			.then(ingredients => {
+				return ingredients
+			})
+			.catch(err => {
+				throw new Error(err);
+			})
+		},
 
 
 		///////////////////////////////////////////////////////////////////////
