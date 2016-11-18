@@ -92,4 +92,13 @@ module.exports = {
 		WHERE fridgeIngredients.fridgeId = ?
 	`,
 
+	"deleteUser": `
+		DELETE FROM users
+		WHERE id = ?
+	`,
+
+	"deleteIngredient": `
+		
+	`,
+
 };

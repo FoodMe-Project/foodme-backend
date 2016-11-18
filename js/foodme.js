@@ -155,7 +155,7 @@ module.exports = function sqlAPI(connection) {
 		// 	let ingredientId = ingredient.ingredientId
 		// 	return sqlQuery(q.userFridge, [ingredient.userId])
 		// 	.then(fridge => {
-
+				
 		// 	})
 		// 	.catch(err => {
 		// 		throw new Error(err);

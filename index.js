@@ -17,8 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Access to the database
 const connection = mysql.createConnection({
 	host: 'localhost',
-	user: 'root',
-	password: 'sqltemppassword',
+	user: 'foodme',
+	password: 'foodme',
 	database: 'foodme'
 });
 const sqlAPI = foodme(connection);
@@ -116,6 +116,16 @@ app.post('/userfridge', (req, res) => {
 		res.status(500).send(err.stack);
 	})
 });
+
+app.post('/deleteuser', (req, res) => {
+	sqlAPI.deleteUser(req.body)
+	.then(confirmation => {
+		res.send(confirmation);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+})
 
 ///////////////////////////////////////////////////////////////////////////////
 const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), () => {
