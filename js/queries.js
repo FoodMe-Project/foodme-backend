@@ -21,7 +21,7 @@ module.exports = {
 
 	"insertFridge": `
 		INSERT INTO fridges
-		(userId)
+		(clientId)
 		VALUES (?)
 	`,
 
@@ -32,24 +32,34 @@ module.exports = {
 
 	"saveRecipe": `
 		INSERT INTO userRecipes
-		(userId, recipeId)
+		(clientId, recipeId)
 		VALUES (?, ?)
 	`,
 
 	"userRecipes": `
 		SELECT * FROM userRecipes
-		WHERE userId = ?
+		WHERE clientId = ?
+	`,
+
+	"selectIngredient": `
+		SELECT * FROM ingredients
+		WHERE id = ?
+	`,
+
+	"insertIngredient": `
+		INSERT INTO ingredients
+		(id, name)
+		VALUES (?, ?)
 	`,
 
 	"saveIngredient": `
 		INSERT INTO fridgeIngredients
 		(fridgeId, ingredientId)
 		VALUES (?, ?)
-	`,
+		ON DUPLICATE KEY UPDATE
+		fridgeId = fridgeId,
+		ingredientId = ingredientId
 
-	"userFridge": `
-		SELECT * FROM fridges
-		WHERE userId = ?
 	`,
 
 	"fridgeIng": `

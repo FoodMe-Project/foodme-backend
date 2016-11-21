@@ -1,6 +1,6 @@
 CREATE TABLE `fridges` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`clientId` INT(11) NOT NULL,
+	`clientId` VARCHAR(100) NOT NULL,
 	PRIMARY KEY (`id`, `clientId`),
 	UNIQUE KEY `clientId` (`clientId`)
 );

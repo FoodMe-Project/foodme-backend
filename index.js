@@ -17,8 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Access to the database
 const connection = mysql.createConnection({
 	host: 'localhost',
-	user: 'foodme',
-	password: 'foodme',
+	user: 'root',
+	password: 'sqltemppassword',
 	database: 'foodme'
 });
 const sqlAPI = foodme(connection);
@@ -26,36 +26,36 @@ const sqlAPI = foodme(connection);
 ///////////////////////////////////////////////////////////////////////////////
 // Documentation
 app.get('/', function(req, res) {
-	res.status(200).render('index');
+	res.sendStatus(200).render('index');
 });
 
 app.post('/insert-into-fridge/', (req, res) => {
 	sqlAPI.saveUserIngredient(req.body)
 	.then(result => {
-		res.send(result);
+		res.json({ingredientId: result});
 	})
 	.catch(err => {
-		res.send(500).send(err.stack);
+		res.sendStatus(500).send(err.stack);
 	})
 });
 
 app.post('/get-fridge/:clientId', (req, res) => {
-	sqlAPI.findorCreateFridge(req.params.clientId)
+	sqlAPI.findOrCreateFridge(req.params.clientId)
 	.then(result => {
-		res.send(result);
+		res.json({fridgeId: result});
 	})
 	.catch(err => {
-		res.status(500).send(err.stack);
+		res.sendStatus(500).send(err.stack);
 	})
 });
 
 app.post('/display-fridge/:fridgeId', (req, res) => {
 	sqlAPI.displayFridge(req.params.fridgeId)
 	.then(result => {
-		res.send(result);
+		res.json(result[0]);
 	})
 	.catch(err => {
-		res.status(500).send(err.stack);
+		res.sendStatus(500).send(err.stack);
 	})
 });
 

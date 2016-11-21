@@ -11,7 +11,7 @@ module.exports = function sqlAPI(connection) {
 		findOrCreateFridge: clientId => {
 			return sqlQuery(q.selectFridge, [clientId])
 			.then(result => {
-				if(!result[0]) {
+				if (!result[0]) {
 					return sqlQuery(q.insertFridge, [clientId])
 					.then(result => {
 						return result.insertId
@@ -27,11 +27,11 @@ module.exports = function sqlAPI(connection) {
 		},
 
 		displayFridge: (fridgeId) => {
-			return sqlQuery(fridgeIng, [fridgeId])
+			return sqlQuery(q.fridgeIng, [fridgeId])
 			.then(ingredients => {
 				return ingredients
 			})
-			.then(err => {
+			.catch(err => {
 				throw new Error(err)
 			})
 		},
@@ -43,7 +43,7 @@ module.exports = function sqlAPI(connection) {
 			return sqlQuery(q.selectIngredient, [apiId])
 			.then(result => {
 				if (!result[0]) {
-					return sqlQuery(q.insertIngredient, [apiId])
+					return sqlQuery(q.insertIngredient, [apiId, name])
 					.then(result => {
 						return sqlQuery(q.saveIngredient, [fridgeId, apiId])
 					})
@@ -52,8 +52,8 @@ module.exports = function sqlAPI(connection) {
 					return sqlQuery(q.saveIngredient, [fridgeId, apiId])
 				}
 			})
-			.then(result => {
-				return result
+			.then(ingredient => {
+				return ingredient
 			})
 			.catch(err => {
 				throw new Error(err);
