@@ -18,48 +18,16 @@ module.exports = {
 
 	///////////////////////////////////////////////////////////////////////////
 	// Mysql queries
-	"insertUser": `
-		INSERT INTO users 
-		(authId, username, createdAt, updatedAt) 
-		VALUES (?, ?, ?, ?)
-	`,
-
-	"selectUser": `
-		SELECT * FROM users 
-		WHERE id = ?
-	`,
-
-	"insertIngredient": `
-		INSERT INTO ingredients
-		(apiId, name, createdAt, updatedAt)
-		VALUES (?, ?, ?, ?)
-	`,
-
-	"selectIngredient": `
-		SELECT * FROM ingredients
-		WHERE id = ?
-	`,
-
-	"insertRecipe": `
-		INSERT INTO recipes
-		(apiId, name, url, createdAt, updatedAt)
-		VALUES (?, ?, ?, ?, ?)
-	`,
-
-	"selectRecipe": `
-		SELECT * FROM recipes
-		WHERE id = ?
-	`,
 
 	"insertFridge": `
 		INSERT INTO fridges
-		(userId, createdAt, updatedAt)
-		VALUES (?, ?, ?)
+		(userId)
+		VALUES (?)
 	`,
 
 	"selectFridge": `
 		SELECT * FROM fridges
-		WHERE id = ?
+		WHERE clientId = ?
 	`,
 
 	"saveRecipe": `
@@ -92,13 +60,10 @@ module.exports = {
 		WHERE fridgeIngredients.fridgeId = ?
 	`,
 
-	"deleteUser": `
-		DELETE FROM users
-		WHERE id = ?
-	`,
-
-	"deleteIngredient": `
-		
+	"deleteIngFridge": `
+		DELETE FROM fridgeIngredients
+		WHERE fridgeId = ?
+		AND ingredientId = ?
 	`,
 
 };

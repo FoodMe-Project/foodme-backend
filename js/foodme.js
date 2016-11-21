@@ -5,144 +5,53 @@ module.exports = function sqlAPI(connection) {
 
 	return {
 
-		createUser: (user) => {
-			return sqlQuery(q.insertUser, [user.clientId, user.nickname, new Date(), new Date()])
+		// when component fridge mount => findorCreateFridge then displayFridge
+		// when user enter ingredient => saveUserIngredient then displayFridge
+
+		findOrCreateFridge: clientId => {
+			return sqlQuery(q.selectFridge, [clientId])
 			.then(result => {
-				return sqlQuery(q.selectUser, [result.insertId])
-			})
-			.then(userCreated => {
-				return userCreated
-			})
-			.catch(err => {
-				if (err.code === 'ER_DUP_ENTRY') {
-					throw new Error('A user with this authId already exists');
+				if(!result[0]) {
+					return sqlQuery(q.insertFridge, [clientId])
+					.then(result => {
+						return result.insertId
+					})
 				}
 				else {
-					throw new Error(err);
+					return result[0].id
 				}
+			})
+			.catch(err => {
+				throw new Error(err)
 			})
 		},
 
-		createIngredient: (ingredient) => {
-			return sqlQuery(q.insertIngredient, [ingredient.apiId, ingredient.name, new Date(), new Date()])
-			.then(result => {
-				return sqlQuery(q.selectIngredient, [result.insertId])
+		displayFridge: (fridgeId) => {
+			return sqlQuery(fridgeIng, [fridgeId])
+			.then(ingredients => {
+				return ingredients
 			})
-			.then(ingredientCreated => {
-				return ingredientCreated
-			})
-			.catch(error => {
-				if (err.code === 'ER_DUP_ENTRY') {
-					throw new Error('An ingredient with this apiId or name already exists');
-				}
-				else {
-					throw new Error(err);
-				}
-			})
-		},
-
-		createRecipe: (recipe) => {
-			return sqlQuery(q.insertRecipe, [recipe.apiId, recipe.name, recipe.url, new Date(), new Date()])
-			.then(result => {
-				return sqlQuery(q.selectRecipe, [result.insertId])
-			})
-			.then(recipeCreated => {
-				return recipeCreated
-			})
-			.catch(err => {
-				if (err.code === 'ER_DUP_ENTRY') {
-					throw new Error('An recipe with this apiId or name already exists');
-				}
-				else {
-					throw new Error(err);
-				}				
-			})
-		},
-
-		createFridge: (user) => {
-			return sqlQuery(q.insertFridge, [user.id, new Date(), new Date()])
-			.then (result => {
-				return sqlQuery(q.selectFridge, [result.insertId])
-			})
-			.then(fridgeCreated => {
-				return fridgeCreated
-			})
-			.catch(err => {
-				if (err.code === 'ER_DUP_ENTRY') {
-					throw new Error('An recipe with this apiId or name already exists');
-				}
-				else {
-					throw new Error(err);
-				}				
-			})
-		},
-
-		saveUserRecipe: (recipe) => {
-			let recipeId = recipe.recipeId;
-			return sqlQuery(q.saveRecipe, [recipe.userId, recipe.recipeId])
-			.then(result => {
-				return sqlQuery(q.selectRecipe, [recipeId])
-			})
-			.then(savedRecipe => {
-				return savedRecipe
-			})
-			.catch(err => {
-				if (err.code === 'ER_DUP_ENTRY') {
-					throw new Error('This recipe is already saved');
-				}
-				else {
-					throw new Error(err);
-				}
-			})
-		},
-
-		getUserSavedRecipes: (user) => {
-			return sqlQuery(q.userRecipes, [user.id])
-			.then(recipes => {
-				return recipes
-			})
-			.catch(err => {
-				throw new Error(err);
+			.then(err => {
+				throw new Error(err)
 			})
 		},
 
 		saveUserIngredient: (ingredient) => {
-			let ingredientId = ingredient.ingredientId
-			return sqlQuery(q.userFridge, [ingredient.userId]) 
-			.then(fridge => {
-				return sqlQuery(q.saveIngredient, [fridge.id, ingredientId])				
-			})
+			let fridgeId = ingredient.fridgeId;
+			let apiId = ingredient.apiId;
+			let name = ingredient.name;
+			return sqlQuery(q.selectIngredient, [apiId])
 			.then(result => {
-				return sqlQuery(q.selectIngredient, [ingredientId])
-			})
-			.then(savedIngredient => {
-				return savedIngredient
-			})
-			.catch(err => {
-				if (err.code === 'ER_DUP_ENTRY') {
-					throw new Error('This ingredient is already saved');
+				if (!result[0]) {
+					return sqlQuery(q.insertIngredient, [apiId])
+					.then(result => {
+						return sqlQuery(q.saveIngredient, [fridgeId, apiId])
+					})
 				}
 				else {
-					throw new Error(err);
+					return sqlQuery(q.saveIngredient, [fridgeId, apiId])
 				}
 			})
-		},
-
-		getUserFridge: (user) => {
-			return sqlQuery(q.userFridge, [user.userId])
-			.then(fridge => {
-				return sqlQuery(q.fridgeIng, [fridge[0].id])
-			})
-			.then(ingredients => {
-				return ingredients
-			})
-			.catch(err => {
-				throw new Error(err);
-			})
-		},
-
-		deleteUser: (user) => {
-			return sqlQuery(q.deleteUser, [user.id])
 			.then(result => {
 				return result
 			})
@@ -151,19 +60,8 @@ module.exports = function sqlAPI(connection) {
 			})
 		},
 
-		// deleteIngredientFridge: (ingredient) => {
-		// 	let ingredientId = ingredient.ingredientId
-		// 	return sqlQuery(q.userFridge, [ingredient.userId])
-		// 	.then(fridge => {
-				
-		// 	})
-		// 	.catch(err => {
-		// 		throw new Error(err);
-		// 	})
-		// }
+		// When component saved recipe mount => displaySavedRecipe
+		// when user add recipe => saveUserRecipe then displaySavedRecipe
 
-
-		///////////////////////////////////////////////////////////////////////
-		// Delete recipe from database 
 	}
 }
