@@ -1,6 +1,5 @@
 # FOODME-BACKEND
-Server side of foodme
-
+Server side of foodme  
 Using express and mySQL as database
 
 ##TODO
