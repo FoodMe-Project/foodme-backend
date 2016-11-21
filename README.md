@@ -10,15 +10,15 @@ Using express and mySQL as database
 ##DOCUMENTATION
 
 ###/get-fridge/:clientId
-Find the user's fridge and return the fridgeId
+Find the user's fridge and return the fridgeId  
 If no user's fridge: create it and return the fridgeId as JSON
 
 ###/display-fridge/:fridgeId
-Display all the content of the user's fridge as JSON
+Display all the content of the user's fridge as JSON  
 As an array of object
 
 ###/insert-into-fridge
-Takes an object with:
-object.fridgeId = the user's fridge ID
-object.ingredientId = the ingredient inputed ID
-object.name = the ingredient inputed name
+Takes an object with:  
+object.fridgeId = the user's fridge ID  
+object.ingredientId = the ingredient inputed ID  
+object.name = the ingredient inputed name  
