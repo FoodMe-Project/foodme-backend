@@ -5,9 +5,6 @@ module.exports = function sqlAPI(connection) {
 
 	return {
 
-		// when component fridge mount => findorCreateFridge then displayFridge
-		// when user enter ingredient => saveUserIngredient then displayFridge
-
 		findOrCreateFridge: clientId => {
 			return sqlQuery(q.selectFridge, [clientId])
 			.then(result => {
@@ -21,9 +18,6 @@ module.exports = function sqlAPI(connection) {
 					return result[0].id
 				}
 			})
-			.catch(err => {
-				throw new Error(err)
-			})
 		},
 
 		displayFridge: (fridgeId) => {
@@ -31,32 +25,26 @@ module.exports = function sqlAPI(connection) {
 			.then(ingredients => {
 				return ingredients
 			})
-			.catch(err => {
-				throw new Error(err)
-			})
 		},
 
 		saveUserIngredient: (ingredient) => {
 			let fridgeId = ingredient.fridgeId;
-			let apiId = ingredient.apiId;
+			let ingredientId = ingredient.ingredientId;
 			let name = ingredient.name;
-			return sqlQuery(q.selectIngredient, [apiId])
+			return sqlQuery(q.selectIngredient, [ingredientId])
 			.then(result => {
 				if (!result[0]) {
-					return sqlQuery(q.insertIngredient, [apiId, name])
+					return sqlQuery(q.insertIngredient, [ingredientId, name])
 					.then(result => {
-						return sqlQuery(q.saveIngredient, [fridgeId, apiId])
+						return sqlQuery(q.saveIngredient, [ingredientId, apiId])
 					})
 				}
 				else {
-					return sqlQuery(q.saveIngredient, [fridgeId, apiId])
+					return sqlQuery(q.saveIngredient, [fridgeId, ingredientId])
 				}
 			})
 			.then(ingredient => {
 				return ingredient
-			})
-			.catch(err => {
-				throw new Error(err);
 			})
 		},
 

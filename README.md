@@ -1,10 +1,24 @@
 # FOODME-BACKEND
-Server side of foodme 
+Server side of foodme
+
 Using express and mySQL as database
 
-## TODO
-  * ~~make .sql file with all tables creation~~
-  * define rows for tables and keep track of all table update
-  * create functions in foodme.js
-  * create app.post and app.get in index.js
-  * import users info from react and store them into database
+##TODO
+  * ~~Save ingredient in user's fridge~~
+  * User saved recipes
+
+##DOCUMENTATION
+
+###/get-fridge/:clientId
+Find the user's fridge and return the fridgeId
+If no user's fridge: create it and return the fridgeId as JSON
+
+###/display-fridge/:fridgeId
+Display all the content of the user's fridge as JSON
+As an array of object
+
+###/insert-into-fridge
+Takes an object with:
+object.fridgeId = the user's fridge ID
+object.ingredientId = the ingredient inputed ID
+object.name = the ingredient inputed name

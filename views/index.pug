@@ -6,18 +6,16 @@ html
 	body
 		h1 foodme backend documentation
 
-		h2 create user
-		p=('/newuser?authId=DATA&username=DATA')
-		p returns an object with newly created user
+		h2=('/get-fridge/:clientId')
+		p Find the user's fridge and return the fridgeId
+		p If no user's fridge: create it and return the fridgeId as JSON
 
-		h2 create ingredient
-		p=('/newingredient?apiId=DATA&name=DATA')
-		p returns an object with newly created ingredient
+		h2=('/display-fridge/:fridgeId')
+		p Display all the content of the user's fridge as JSON
+		p As an array of object
 
-		h2 create recipe
-		p=('/newrecipe?apiId=DATA&name=DATA&url=DATA')
-		p returns an object with newly created recipe
-
-		h2 create fridge
-		p=('/newfridge?id=USER_ID')
-		p returns an object with newly created fridge
+		h2=('/insert-into-fridge')
+		p Takes an object with:
+		p object.fridgeId = the user's fridge ID
+		p object.ingredientId = the ingredient inputed ID
+		p object.name = the ingredient inputed name

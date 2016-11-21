@@ -60,7 +60,7 @@ module.exports = {
 		fridgeId = fridgeId,
 		ingredientId = ingredientId
 
-	`,
+	`,	
 
 	"fridgeIng": `
 		SELECT ingredients.id, ingredients.name  
