@@ -5,10 +5,13 @@ const morgan = require('morgan');
 const mysql = require('mysql');
 const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
 
 const app = express();
 app.set('view engine', 'pug');
 
+app.use(cors());
 app.use(morgan('dev'));
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 app.use(bodyParser.json());
@@ -29,17 +32,10 @@ app.get('/', function(req, res) {
 	res.status(200).render('index');
 });
 
-// Functions
-app.post('/insert-into-fridge/', (req, res) => {
-	sqlAPI.saveUserIngredient(req.body)
-	.then(result => {
-		res.json(result);
-	})
-	.catch(err => {
-		res.status(500).send(err.stack);
-	})
-});
+///////////////////////////////////////////////////////////////////////////////
+// Fridge
 
+// On mount
 app.post('/get-fridge/:clientId', (req, res) => {
 	sqlAPI.findOrCreateFridge(req.params.clientId)
 	.then(result => {
@@ -50,15 +46,74 @@ app.post('/get-fridge/:clientId', (req, res) => {
 	})
 });
 
+// On mount and update
 app.post('/display-fridge/:fridgeId', (req, res) => {
 	sqlAPI.displayFridge(req.params.fridgeId)
 	.then(result => {
-		res.json(result[0]);
+		res.json(result);
 	})
 	.catch(err => {
 		res.status(500).send(err.stack);
 	})
 });
+
+// On user ingredient input
+app.post('/insert-into-fridge/', (req, res) => {
+	sqlAPI.saveUserIngredient(req.body)
+	.then(result => {
+		res.json(result);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+});
+
+// Delete ingredient from fridge
+app.post('/delete-ingredient', (req, res) => {
+	sqlAPI.deleteIngredient(req.body)
+	.then(result => {
+		res.json(result);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+})
+
+///////////////////////////////////////////////////////////////////////////////
+// Saved recipes
+
+// On mount and update
+app.post('/display-recipes/:clientId', (req, res) => {
+	sqlAPI.displaySavedRecipe(req.params.clientId)
+	.then(recipes => {
+		res.json(recipes);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+});
+
+// On user save recipe input
+app.post('/insert-save-recipe/', (req, res) => {
+	sqlAPI.saveUserRecipe(req.body)
+	.then(result => {
+		res.json(result);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+});
+
+// Delete saved recipe
+app.post('/delete-recipe/', (req, res) => {
+	sqlAPI.deleteRecipe(req.body)
+	.then(result => {
+		res.json(result);
+	})
+	.catch(err => {
+		res.status(500).send(err.stack);
+	})
+})
 
 ///////////////////////////////////////////////////////////////////////////////
 const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), () => {

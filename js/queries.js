@@ -18,7 +18,6 @@ module.exports = {
 
 	///////////////////////////////////////////////////////////////////////////
 	// Mysql queries
-
 	"insertFridge": `
 		INSERT INTO fridges
 		(clientId)
@@ -30,10 +29,49 @@ module.exports = {
 		WHERE clientId = ?
 	`,
 
+	"selectIngredient": `
+		SELECT * FROM ingredients
+		WHERE name = ?
+	`,
+
+	"insertIngredient": `
+		INSERT INTO ingredients
+		(name)
+		VALUES (?)
+		ON DUPLICATE KEY UPDATE
+		name = name
+	`,
+
+	"saveIngredient": `
+		INSERT INTO fridgeIngredients
+		(fridgeId, ingredientName)
+		VALUES (?, ?)
+		ON DUPLICATE KEY UPDATE
+		fridgeId = fridgeId,
+		ingredientName = ingredientName
+	`,	
+
+	"fridgeContent": `
+		SELECT ingredients.name  
+		FROM ingredients 
+		JOIN fridgeIngredients 
+			ON fridgeIngredients.ingredientName = ingredients.name 
+		WHERE fridgeIngredients.fridgeId = ?
+	`,
+
+	"deleteIngFridge": `
+		DELETE FROM fridgeIngredients
+		WHERE fridgeId = ?
+		AND ingredientName = ?
+	`,
+
 	"saveRecipe": `
 		INSERT INTO userRecipes
 		(clientId, recipeId)
 		VALUES (?, ?)
+		ON DUPLICATE KEY UPDATE
+		clientId = clientId,
+		recipeId = recipeId
 	`,
 
 	"userRecipes": `
@@ -41,39 +79,17 @@ module.exports = {
 		WHERE clientId = ?
 	`,
 
-	"selectIngredient": `
-		SELECT * FROM ingredients
+	"selectRecipe": `
+		SELECT * FROM recipes
 		WHERE id = ?
 	`,
 
-	"insertIngredient": `
-		INSERT INTO ingredients
-		(id, name)
-		VALUES (?, ?)
-	`,
-
-	"saveIngredient": `
-		INSERT INTO fridgeIngredients
-		(fridgeId, ingredientId)
-		VALUES (?, ?)
+	"insertRecipe": `
+		INSERT INTO recipes
+		(id)
+		VALUES (?)
 		ON DUPLICATE KEY UPDATE
-		fridgeId = fridgeId,
-		ingredientId = ingredientId
-
-	`,	
-
-	"fridgeIng": `
-		SELECT ingredients.id, ingredients.name  
-		FROM ingredients 
-		JOIN fridgeIngredients 
-			ON fridgeIngredients.ingredientId = ingredients.id 
-		WHERE fridgeIngredients.fridgeId = ?
-	`,
-
-	"deleteIngFridge": `
-		DELETE FROM fridgeIngredients
-		WHERE fridgeId = ?
-		AND ingredientId = ?
+		id = id
 	`,
 
 };

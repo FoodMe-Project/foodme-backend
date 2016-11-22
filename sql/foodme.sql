@@ -11,9 +11,8 @@ CREATE TABLE `recipes` (
 );
 
 CREATE TABLE `ingredients` (
-	`id` VARCHAR(100) NOT NULL,
-	`name` VARCHAR(50) DEFAULT NULL,
-	PRIMARY KEY (`id`),
+	`name` VARCHAR(50) NOT NULL,
+	PRIMARY KEY (`name`),
 	UNIQUE KEY `name` (`name`)
 );
 
@@ -26,16 +25,16 @@ CREATE TABLE `userRecipes` (
 
 CREATE TABLE `recipeIngredients` (
 	`recipeId` VARCHAR(100) NOT NULL,
-	`ingredientId` VARCHAR(100) NOT NULL,
-	PRIMARY KEY (`recipeId`, `ingredientId`),
+	`ingredientName` VARCHAR(100) NOT NULL,
+	PRIMARY KEY (`recipeId`, `ingredientName`),
 	FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`),
-	FOREIGN KEY (`ingredientId`) REFERENCES `ingredients` (`id`)
+	FOREIGN KEY (`ingredientName`) REFERENCES `ingredients` (`name`)
 );
 
 CREATE TABLE `fridgeIngredients` (
 	`fridgeId` INT(11) NOT NULL,
-	`ingredientId` VARCHAR(100) NOT NULL,
-	PRIMARY KEY (`fridgeId`, `ingredientId`),
+	`ingredientName` VARCHAR(100) NOT NULL,
+	PRIMARY KEY (`fridgeId`, `ingredientName`),
 	FOREIGN KEY (`fridgeId`) REFERENCES `fridges` (`id`),
-	FOREIGN KEY (`ingredientId`) REFERENCES `ingredients` (`id`)
+	FOREIGN KEY (`ingredientName`) REFERENCES `ingredients` (`name`)
 );

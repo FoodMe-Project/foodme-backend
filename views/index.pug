@@ -12,10 +12,28 @@ html
 
 		h2=('/display-fridge/:fridgeId')
 		p Display all the content of the user's fridge as JSON
-		p As an array of object
+		p as an array of objects
 
 		h2=('/insert-into-fridge')
 		p Takes an object with:
-		p object.fridgeId = the user's fridge ID
-		p object.ingredientId = the ingredient inputed ID
-		p object.name = the ingredient inputed name
+		p object.fridgeId: the user's fridgeId
+		p object.ingredientId: the ingredientId inputed
+		p object.name: the ingredient inputed name
+		p it returns confirmation
+
+		h2=('/delete-ingredient')
+		p Takes an object with:
+		p object.fridgeId: the user's fridgeId
+		p object.ingredientId: the ingredientId inputed
+		p it returns confirmation 
+
+		h2=('/display-recipe/:clientId')
+		p Display all the the recipes the user saved as JSON
+		p as an array of objects
+
+		h2=('/insert-save-recipe')
+		p Insert into the 
+		p Takes an object with: 
+		p object.clientId: the user's clientId from Auth0
+		p object.recipeId: the recipe saved bu the user
+		p 
