@@ -92,4 +92,10 @@ module.exports = {
 		id = id
 	`,
 
+	"deleteSavedRecipe": `
+		DELETE FROM userRecipes
+		WHERE clientId = ?
+		AND recipeId = ?
+	`,
+
 };

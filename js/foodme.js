@@ -50,8 +50,8 @@ module.exports = function sqlAPI(connection) {
 
 		deleteIngredient: ingredient => {
 			let fridgeId = ingredient.fridgeId;
-			let name = ingredient.name;
-			return sqlQuery(q.deleteIngFridge, [name])
+			let name = ingredient.ingredientName;
+			return sqlQuery(q.deleteIngFridge, [fridgeId, name])
 			.then(result => {
 				return result
 			})
