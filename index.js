@@ -18,12 +18,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Access to the database
-const connection = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: 'sqltemppassword',
-	database: 'foodme'
-});
+let connection;
+if (process.env.CLEARDB_DATABASE_URL) {
+  connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL);
+}
+else { 
+  connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : 'sqltemppassword',
+    database : 'foodme'
+  });
+}
 const sqlAPI = foodme(connection);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -116,8 +122,9 @@ app.post('/delete-recipe/', (req, res) => {
 })
 
 ///////////////////////////////////////////////////////////////////////////////
-const server = app.listen((process.env.PORT || 4000), (process.env.IP || 'localhost'), () => {
-	const host = server.address().address;
-	const port = server.address().port;
-	console.log('Web server listening at http://%s:%s', host, port);
+const server = app.listen((process.env.PORT), function () {
+  const host = server.address().address;
+  const port = server.address().port;
+
+  console.log('Web Server is listening at http://%s:%s', host, port);
 });
