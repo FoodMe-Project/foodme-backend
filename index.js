@@ -121,9 +121,8 @@ app.post('/delete-recipe/', (req, res) => {
 })
 
 ///////////////////////////////////////////////////////////////////////////////
-const server = app.listen((process.env.PORT), function () {
-  const host = server.address().address;
-  const port = server.address().port;
+const port = process.env.PORT || 8000;
 
-  console.log('Web Server is listening at http://%s:%s', host, port);
+const server = app.listen(port, function () {
+  console.log('Web Server is listening on port: ', port);
 });
