@@ -7,13 +7,12 @@ const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-
 const app = express();
 app.set('view engine', 'pug');
+app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
 app.use(cors());
 app.use(morgan('dev'));
-app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
