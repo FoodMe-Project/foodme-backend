@@ -32,6 +32,26 @@ else {
   });
 }
 
+function handleDisconnect(conn) {
+  conn.on('error', function(err) {
+    if (!err.fatal) {
+      return;
+    }
+
+    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+      throw err;
+    }
+
+    console.log('Re-connecting lost connection: ' + err.stack);
+
+    connection = mysql.createConnection(conn.config);
+    handleDisconnect(connection);
+    connection.connect();
+  });
+}
+
+handleDisconnect(connection);
+
 // function handleDisconnect() {
 //   connection = mysql.createConnection({db_config});
 
