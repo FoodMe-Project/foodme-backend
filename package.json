@@ -4,14 +4,15 @@
   "description": "Server side of foodme",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/charlesjamb/foodme-backend.git"
+    "url": "git+https://github.com/FoodMe-Project/foodme-backend.git"
   },
   "author": "Charles Jambon",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/charlesjamb/foodme-backend/issues"
   },
